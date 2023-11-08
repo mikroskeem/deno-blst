@@ -45,35 +45,35 @@ const { symbols } = Deno.dlopen(
     illumos: uri + "libblst_deno.so",
   }[Deno.build.os],
   {
-    generate_key: { parameters: [], result: "buffer", nonblocking: false },
+    generate_key: { parameters: [], result: "buffer", nonblocking: true },
     get_public_key: {
       parameters: ["buffer", "usize"],
       result: "buffer",
-      nonblocking: false,
+      nonblocking: true,
     },
     sign: {
       parameters: ["buffer", "usize", "buffer", "usize"],
       result: "buffer",
-      nonblocking: false,
+      nonblocking: true,
     },
     verify: {
       parameters: ["buffer", "usize", "buffer", "usize", "buffer", "usize"],
       result: "u8",
-      nonblocking: false,
+      nonblocking: true,
     },
   },
 )
 
 export function generate_key() {
   const rawResult = symbols.generate_key()
-  const result = readPointer(rawResult)
+  const result = rawResult.then(readPointer)
   return result
 }
 export function get_public_key(a0: Uint8Array) {
   const a0_buf = encode(a0)
 
   const rawResult = symbols.get_public_key(a0_buf, a0_buf.byteLength)
-  const result = readPointer(rawResult)
+  const result = rawResult.then(readPointer)
   return result
 }
 export function sign(a0: Uint8Array, a1: Uint8Array) {
@@ -86,7 +86,7 @@ export function sign(a0: Uint8Array, a1: Uint8Array) {
     a1_buf,
     a1_buf.byteLength,
   )
-  const result = readPointer(rawResult)
+  const result = rawResult.then(readPointer)
   return result
 }
 export function verify(a0: Uint8Array, a1: Uint8Array, a2: Uint8Array) {

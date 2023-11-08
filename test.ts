@@ -6,8 +6,8 @@ import {
   verify,
 } from "./bindings/bindings.ts";
 
-const privateKey = generate_key();
-const publicKey = get_public_key(privateKey);
+const privateKey = await generate_key();
+const publicKey = await get_public_key(privateKey);
 
 console.log(
   "private key",
@@ -20,6 +20,6 @@ console.log(
 );
 
 const msg = new TextEncoder().encode("foo bar baz");
-const signature = sign(privateKey, msg);
+const signature = await sign(privateKey, msg);
 console.log("signature", encodeHex(signature));
-console.log("verified", verify(publicKey, signature, msg) === 1);
+console.log("verified", await verify(publicKey, signature, msg) === 1);
