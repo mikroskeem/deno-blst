@@ -2,9 +2,14 @@
 
 use bls12_381::{G1Affine, G1Projective, G2Affine, Scalar};
 use bls_signatures::{PrivateKey, PublicKey, Serialize, Signature};
-use deno_bindgen::deno_bindgen;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
+
+#[cfg(not(target_arch = "wasm32"))]
+use deno_bindgen::deno_bindgen;
+
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::wasm_bindgen;
 
 pub type StdError = Box<dyn std::error::Error + Send + Sync>;
 
@@ -83,14 +88,16 @@ fn load_signature(signature: &[u8]) -> Result<Signature, StdError> {
     Ok(Signature::from(g2_affine))
 }
 
-#[deno_bindgen(non_blocking)]
+#[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn generate_key() -> Vec<u8> {
     let mut rng = ChaCha8Rng::from_entropy();
 
     PrivateKey::generate(&mut rng).as_bytes()
 }
 
-#[deno_bindgen(non_blocking)]
+#[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn get_public_key(private_key: &[u8]) -> Vec<u8> {
     load_private_key(private_key)
         .expect("unable to load private key")
@@ -98,7 +105,8 @@ pub fn get_public_key(private_key: &[u8]) -> Vec<u8> {
         .as_bytes()
 }
 
-#[deno_bindgen(non_blocking)]
+#[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn sign(private_key: &[u8], message: &[u8]) -> Vec<u8> {
     load_private_key(private_key)
         .expect("unable to load private key")
@@ -106,7 +114,8 @@ pub fn sign(private_key: &[u8], message: &[u8]) -> Vec<u8> {
         .as_bytes()
 }
 
-#[deno_bindgen(non_blocking)]
+#[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn verify(public_key: &[u8], signature: &[u8], message: &[u8]) -> u8 {
     let public_key = load_public_key(public_key).expect("unable to load public key");
     let signature = load_signature(signature).expect("unable to load signature");

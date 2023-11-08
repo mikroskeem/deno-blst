@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "wasmbuild": "deno run -A https://deno.land/x/wasmbuild@0.15.1/main.ts",
+    "bindgen": "deno run -A https://deno.land/x/deno_bindgen@0.8.1/cli.ts"
+  }
+}

@@ -2,3 +2,4 @@
 channel = "1.73.0"
 components = [ "rustfmt", "rust-src", "rust-analyzer" ]
 profile = "default"
+targets = ["wasm32-unknown-unknown"]
