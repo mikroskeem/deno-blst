@@ -1,12 +1,12 @@
 import { encodeHex } from "https://deno.land/std@0.205.0/encoding/hex.ts";
 import {
-  generate_key,
+  generate_private_key_random,
   get_public_key,
   sign,
   verify,
 } from "./bindings/bindings.ts";
 
-const privateKey = await generate_key();
+const privateKey = await generate_private_key_random();
 const publicKey = await get_public_key(privateKey);
 
 console.log(

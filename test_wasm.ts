@@ -4,13 +4,13 @@ import { instantiate } from "./lib/blst_deno.generated.js";
 const mod = await instantiate();
 console.log(mod);
 const {
-  generate_key,
+  generate_private_key_random,
   get_public_key,
   sign,
   verify,
 } = mod;
 
-const privateKey = await generate_key();
+const privateKey = await generate_private_key_random();
 const publicKey = await get_public_key(privateKey);
 
 console.log(

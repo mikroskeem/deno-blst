@@ -45,7 +45,16 @@ const { symbols } = Deno.dlopen(
     illumos: uri + "libblst_deno.so",
   }[Deno.build.os],
   {
-    generate_key: { parameters: [], result: "buffer", nonblocking: true },
+    generate_private_key_random: {
+      parameters: [],
+      result: "buffer",
+      nonblocking: true,
+    },
+    generate_private_key_seed: {
+      parameters: ["buffer", "usize"],
+      result: "buffer",
+      nonblocking: true,
+    },
     get_public_key: {
       parameters: ["buffer", "usize"],
       result: "buffer",
@@ -64,8 +73,15 @@ const { symbols } = Deno.dlopen(
   },
 )
 
-export function generate_key() {
-  const rawResult = symbols.generate_key()
+export function generate_private_key_random() {
+  const rawResult = symbols.generate_private_key_random()
+  const result = rawResult.then(readPointer)
+  return result
+}
+export function generate_private_key_seed(a0: Uint8Array) {
+  const a0_buf = encode(a0)
+
+  const rawResult = symbols.generate_private_key_seed(a0_buf, a0_buf.byteLength)
   const result = rawResult.then(readPointer)
   return result
 }

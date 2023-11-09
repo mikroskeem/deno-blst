@@ -90,7 +90,13 @@ fn load_signature(signature: &[u8]) -> Result<Signature, StdError> {
 
 #[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-pub fn generate_key() -> Vec<u8> {
+pub fn generate_private_key_seed(seed: &[u8]) -> Vec<u8> {
+    PrivateKey::new(seed).as_bytes()
+}
+
+#[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn generate_private_key_random() -> Vec<u8> {
     let mut rng = ChaCha8Rng::from_entropy();
 
     PrivateKey::generate(&mut rng).as_bytes()
