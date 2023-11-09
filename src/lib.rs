@@ -113,7 +113,7 @@ pub fn get_random(n: usize) -> Vec<u8> {
 
     let mut rng = get_rng();
 
-    let mut buf = Vec::with_capacity(n);
+    let mut buf = vec![0; n];
     rng.deref_mut().fill_bytes(&mut buf);
 
     buf
