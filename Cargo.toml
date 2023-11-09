@@ -9,6 +9,7 @@ crate-type = ["cdylib"]
 [dependencies]
 bls-signatures = "0.15.0"
 bls12_381 = "0.8.0"
+console_error_panic_hook = "0.1.7"
 deno_bindgen = "0.8.1"
 rand = "0.8.5"
 rand_chacha = "0.3.1"

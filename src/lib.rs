@@ -20,6 +20,11 @@ pub type StdError = Box<dyn std::error::Error + Send + Sync>;
 
 static RANDOM: OnceLock<Mutex<ChaCha8Rng>> = OnceLock::new();
 
+fn ensure_init() {
+    #[cfg(target_arch = "wasm32")]
+    console_error_panic_hook::set_once();
+}
+
 fn get_rng<'a>() -> MutexGuard<'a, ChaCha8Rng> {
     let rng = RANDOM.get_or_init(|| Mutex::new(ChaCha8Rng::from_entropy()));
 
@@ -104,6 +109,8 @@ fn load_signature(signature: &[u8]) -> Result<Signature, StdError> {
 #[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn get_random(n: usize) -> Vec<u8> {
+    ensure_init();
+
     let mut rng = get_rng();
 
     let mut buf = Vec::with_capacity(n);
@@ -115,6 +122,8 @@ pub fn get_random(n: usize) -> Vec<u8> {
 #[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn generate_private_key_seed(seed: &[u8]) -> Vec<u8> {
+    ensure_init();
+
     if seed.len() < 32 {
         panic!("seed must be n >= 32 bytes");
     }
@@ -124,6 +133,8 @@ pub fn generate_private_key_seed(seed: &[u8]) -> Vec<u8> {
 #[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn generate_private_key_random() -> Vec<u8> {
+    ensure_init();
+
     let mut rng = get_rng();
 
     PrivateKey::generate(rng.deref_mut()).as_bytes()
@@ -132,6 +143,8 @@ pub fn generate_private_key_random() -> Vec<u8> {
 #[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn get_public_key(private_key: &[u8]) -> Vec<u8> {
+    ensure_init();
+
     load_private_key(private_key)
         .expect("unable to load private key")
         .public_key()
@@ -141,6 +154,8 @@ pub fn get_public_key(private_key: &[u8]) -> Vec<u8> {
 #[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn sign(private_key: &[u8], message: &[u8]) -> Vec<u8> {
+    ensure_init();
+
     load_private_key(private_key)
         .expect("unable to load private key")
         .sign(message)
@@ -150,6 +165,8 @@ pub fn sign(private_key: &[u8], message: &[u8]) -> Vec<u8> {
 #[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn verify(public_key: &[u8], signature: &[u8], message: &[u8]) -> u8 {
+    ensure_init();
+
     let public_key = load_public_key(public_key).expect("unable to load public key");
     let signature = load_signature(signature).expect("unable to load signature");
     let result = public_key.verify(signature, message);
