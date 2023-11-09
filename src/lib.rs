@@ -115,6 +115,9 @@ pub fn get_random(n: usize) -> Vec<u8> {
 #[cfg_attr(not(target_arch = "wasm32"), deno_bindgen(non_blocking))]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn generate_private_key_seed(seed: &[u8]) -> Vec<u8> {
+    if seed.len() < 32 {
+        panic!("seed must be n >= 32 bytes");
+    }
     PrivateKey::new(seed).as_bytes()
 }
 
