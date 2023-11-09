@@ -60,6 +60,7 @@ const { symbols } = Deno.dlopen(
       result: "buffer",
       nonblocking: true,
     },
+    get_random: { parameters: ["usize"], result: "buffer", nonblocking: true },
     sign: {
       parameters: ["buffer", "usize", "buffer", "usize"],
       result: "buffer",
@@ -89,6 +90,11 @@ export function get_public_key(a0: Uint8Array) {
   const a0_buf = encode(a0)
 
   const rawResult = symbols.get_public_key(a0_buf, a0_buf.byteLength)
+  const result = rawResult.then(readPointer)
+  return result
+}
+export function get_random(a0: bigint) {
+  const rawResult = symbols.get_random(a0)
   const result = rawResult.then(readPointer)
   return result
 }
